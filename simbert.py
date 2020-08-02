@@ -15,19 +15,18 @@ from bert4keras.snippets import DataGenerator
 from bert4keras.snippets import sequence_padding
 from bert4keras.snippets import text_segmentate
 from bert4keras.snippets import AutoRegressiveDecoder
-from bert4keras.snippets import uniout
 
 # 基本信息
 maxlen = 32
-batch_size = 128
-steps_per_epoch = 1000
-epochs = 10000
+batch_size = 4
+steps_per_epoch = 20
+epochs = 2
 corpus_path = 'data_sample.json'
 
 # bert配置
-config_path = '/root/kg/bert/chinese_L-12_H-768_A-12/bert_config.json'
-checkpoint_path = '/root/kg/bert/chinese_L-12_H-768_A-12/bert_model.ckpt'
-dict_path = '/root/kg/bert/chinese_L-12_H-768_A-12/vocab.txt'
+config_path = 'chinese_simbert_L-4_H-312_A-12/bert_config.json'
+checkpoint_path = 'chinese_simbert_L-4_H-312_A-12/bert_model.ckpt'
+dict_path = 'chinese_simbert_L-4_H-312_A-12/vocab.txt'
 
 # 加载并精简词表，建立分词器
 token_dict, keep_tokens = load_vocab(
@@ -72,11 +71,13 @@ class data_generator(DataGenerator):
             self.some_samples.append(text)
             if len(self.some_samples) > 1000:
                 self.some_samples.pop(0)
+            # sentence a 和sentence b 按前后顺序加入到序列
             token_ids, segment_ids = tokenizer.encode(
                 text, synonym, max_length=maxlen * 2
             )
             batch_token_ids.append(token_ids)
             batch_segment_ids.append(segment_ids)
+            #把[CLS] SENT_a [SEP] SENT_b [SEP]和[CLS] SENT_b [SEP] SENT_a [SEP]都加入训练
             token_ids, segment_ids = tokenizer.encode(
                 synonym, text, max_length=maxlen * 2
             )
@@ -239,17 +240,18 @@ class Evaluate(keras.callbacks.Callback):
 
 
 if __name__ == '__main__':
-
-    train_generator = data_generator(read_corpus(), batch_size)
+    #读取训练数据
+    corpus = read_corpus()
+    train_generator = data_generator(corpus, batch_size)
+    # 评估模型
     evaluator = Evaluate()
-
+    #模型训练,训练完成后调用callbacks评估
     model.fit_generator(
         train_generator.forfit(),
-        steps_per_epoch=steps_per_epoch,
+        steps_per_epoch=20,
         epochs=epochs,
         callbacks=[evaluator]
     )
 
 else:
-
     model.load_weights('./latest_model.weights')

@@ -14,9 +14,9 @@ from keras.models import Model
 maxlen = 32
 
 # bert配置
-config_path = '/root/kg/bert/chinese_simbert_L-12_H-768_A-12/bert_config.json'
-checkpoint_path = '/root/kg/bert/chinese_simbert_L-12_H-768_A-12/bert_model.ckpt'
-dict_path = '/root/kg/bert/chinese_simbert_L-12_H-768_A-12/vocab.txt'
+config_path = 'chinese_simbert_L-4_H-312_A-12/bert_config.json'
+checkpoint_path = 'chinese_simbert_L-4_H-312_A-12/bert_model.ckpt'
+dict_path = 'chinese_simbert_L-4_H-312_A-12/vocab.txt'
 
 # 建立分词器
 tokenizer = Tokenizer(dict_path, do_lower_case=True)  # 建立分词器
