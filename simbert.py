@@ -36,7 +36,6 @@ token_dict, keep_tokens = load_vocab(
 )
 tokenizer = Tokenizer(token_dict, do_lower_case=True)
 
-
 def read_corpus():
     """读取语料，每行一个json
     """
@@ -164,8 +163,7 @@ class SynonymsGenerator(AutoRegressiveDecoder):
 
     def generate(self, text, n=1, topk=5):
         token_ids, segment_ids = tokenizer.encode(text, max_length=maxlen)
-        output_ids = self.random_sample([token_ids, segment_ids], n,
-                                        topk)  # 基于随机采样
+        output_ids = self.random_sample([token_ids, segment_ids], n, topk)  # 基于随机采样
         return [tokenizer.decode(ids) for ids in output_ids]
 
 
